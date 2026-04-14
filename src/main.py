@@ -1,8 +1,8 @@
 import flet as ft
-from src.controllers.UserController import AuthController
-from src.controllers.TareaController import TareaController
-from src.views.LoginView import LoginView
-from src.views.dashboard import DashboardView
+from controllers.UserController import AuthController
+from controllers.TareaController import TareaController
+from views.LoginView import LoginView
+from views.dashboard import DashboardView
 
 def main(page: ft.Page):
     # Instanciamos los controladores una sola vez
@@ -15,9 +15,22 @@ def main(page: ft.Page):
             page.views.append(LoginView(page, auth_ctrl))
         elif page.route == "/dashboard":
             page.views.append(DashboardView(page, task_ctrl))
-        # Agregas aqui el registro_view de la misma forma
+        
+        # caso de seguridad: si algo falla, mostrar texto de error
+        if not page.views:
+            page.views.append(
+                ft.View("/", [ft.Text("Error:Ruta no encontrada o visita vacia")])
+            )
+
         page.update()
 
+    page.on_route_change = route_change
+    # Forzamos la navegacion inicial
+    page.go("/")
+
+def main():
+    # Ejecucion de la app
+    ft.app(target=start)
 
 if __name__ == "__main__":
     main()
