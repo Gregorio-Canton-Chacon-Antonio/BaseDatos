@@ -16,7 +16,7 @@ def DashboardView(page, tarea_controller):
                     ), padding=10
                 )
             )
-        )
+        
     page.update()
 
     # Formulario rapido
