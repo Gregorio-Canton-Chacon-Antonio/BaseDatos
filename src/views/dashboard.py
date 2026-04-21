@@ -16,16 +16,17 @@ def DashboardView(page, tarea_controller):
                     ), padding=10
                 )
             )
-        
-    page.update()
+        page.update()
 
     # Formulario rapido
     txt_titulo = ft.TextField(label="Nueva Tarea", expand=True)
 
     def add_task(e):
         if txt_titulo.value.strip():
-            sucess, msg = tarea_controller.guardar_nueva(user['id_usuario'], txt_titulo.value.strip())
-            if sucess: 
+            success, msg = tarea_controller.guardar_nueva(
+                user['id_usuario'], txt_titulo.value.strip(), "", "media", "personal"
+            )
+            if success:
                 txt_titulo.value = ""
                 refresh()
 
