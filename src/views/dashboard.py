@@ -33,7 +33,7 @@ def DashboardView(page, tarea_controller):
     return ft.View("/dashboard", [
         ft.AppBar(
             title=ft.Text(f"Bienvenido, {user['nombre']}"),
-            actions=[ft.IconButton(ft.Icons.EXIT_TO_APP, on_click=lambda _: page.push_route("/"))]
+            actions=[ft.IconButton(ft.Icons.EXIT_TO_APP, on_click=lambda _: page.go("/"))]
         ),
         ft.Column([
             ft.Row([txt_titulo, ft.FloatingActionButton(icon=ft.Icons.ADD, on_click=add_task)]),

@@ -23,7 +23,7 @@ def start(page: ft.Page):
     def view_pop(e):
         if len(page.views) > 1:
             page.views.pop()
-            page.push_route(page.views[-1].route)
+            page.go(page.views[-1].route)
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
