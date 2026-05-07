@@ -1,39 +1,59 @@
 import flet as ft
+import traceback
 from controllers.UserController import AuthController
 from controllers.TareaController import TareaController
 from views.LoginView import LoginView
-from views.dashboard import DashboardView
+from views.dashboardView import DashboardView
+from views.RegistroView import RegistroView
+from views.UserView import PerfilView
+
 
 def start(page: ft.Page):
-    page.title = "Sistema SIGE"
-    page.window_width = 450
-    page.window_height = 700
+    page.title = "Gestor de Tareas"
+    page.window_width = 420
+    page.window_height = 580
 
     auth_ctrl = AuthController()
     task_ctrl = TareaController()
 
     def route_change(e):
-        page.views.clear()
-        if page.route == "/":
-            page.views.append(LoginView(page, auth_ctrl))
-        elif page.route == "/dashboard":
-            page.views.append(DashboardView(page, task_ctrl))
-        page.update()
+        try:
+            page.views.clear()
+            if page.route == "/":
+                page.views.append(LoginView(page, auth_ctrl))
+            elif page.route == "/dashboard":
+                page.views.append(DashboardView(page, task_ctrl))
+            elif page.route == "/registro":
+                page.views.append(RegistroView(page, auth_ctrl))
+            elif page.route == "/perfil":
+                page.views.append(PerfilView(page, auth_ctrl))
+            page.update()
+        except Exception:
+            traceback.print_exc()
 
     def view_pop(e):
         if len(page.views) > 1:
             page.views.pop()
+            page.update()
             page.go(page.views[-1].route)
+
+    def on_error(e):
+        traceback.print_exc()
+        print("PAGE ERROR:", e.data)
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
+    page.on_error = on_error
 
-    # Cargamos la vista inicial directamente
-    page.views.append(LoginView(page, auth_ctrl))
-    page.update()
+    if page.route == "/":
+        route_change(None)
+    else:
+        page.go("/")
+
 
 def main():
-    ft.run(main=start)
+    ft.app(target=start)
+
 
 if __name__ == "__main__":
     main()

@@ -1,21 +1,19 @@
 import bcrypt
-from .databaseModel import Database
+from models.databaseModel import Database
 
 class UsuarioModel:
     def __init__(self):
         self.db = Database()
 
     def registrar(self, usuario_data):
-        # Encriptar contrasena 
-        salt = bcrypt.gensalt()
-        hashed_pw = bcrypt.hashpw(usuario_data.password.encode('utf-8'), salt)
-
+        hashed_pw = bcrypt.hashpw(usuario_data.password.encode('utf-8'), bcrypt.gensalt())
         conn = self.db.get_connection()
         cursor = conn.cursor()
-        try: 
+        try:
             cursor.execute(
-                "INSERT INTO usuario (nombre, email, password) VALUES (%s, %s, %s)", 
-                (usuario_data.nombre, usuario_data.email, hashed_pw.decode('utf-8'))
+                "INSERT INTO usuario (nombre, apellido, email, password, telefono, fecha_registro) VALUES (%s, %s, %s, %s, %s, %s)",
+                (usuario_data.nombre, usuario_data.apellido, usuario_data.email,
+                 hashed_pw.decode('utf-8'), usuario_data.telefono, usuario_data.fecha)
             )
             conn.commit()
             return True
@@ -28,7 +26,7 @@ class UsuarioModel:
     def validar_login(self, email, password):
         conn = self.db.get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
+        cursor.execute("SELECT * FROM usuario WHERE email=%s", (email,))
         user = cursor.fetchone()
         conn.close()
 
