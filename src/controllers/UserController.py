@@ -6,10 +6,9 @@ class AuthController:
     def __init__(self):
         self.model = UsuarioModel()
 
-    def registrar_Usuario(self, nombre, apellido, email, contrasena, telefono, fecha):
+    def registrar_Usuario(self, nombre, email, contrasena):
         try:
-            nuevo = UsuarioShema(nombre=nombre, apellido=apellido, email=email,
-                                 password=contrasena, telefono=telefono, fecha=fecha)
+            nuevo = UsuarioShema(nombre=nombre, email=email, password=contrasena)
             success = self.model.registrar(nuevo)
             return success, "Usuario creado correctamente"
         except ValidationError as e:

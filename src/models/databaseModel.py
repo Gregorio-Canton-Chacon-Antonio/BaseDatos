@@ -10,5 +10,5 @@ class Database:
             host="localhost",
             user="root",
             password="",
-            database="mydbmane"
+            database="nibba_clothez"
         )

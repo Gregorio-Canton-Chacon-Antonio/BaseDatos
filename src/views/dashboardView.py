@@ -1,88 +1,71 @@
 import flet as ft
 
+CONDICION_LABELS = {
+    "nuevo": "Nuevo",
+    "como_nuevo": "Como nuevo",
+    "usado_excelente": "Usado - Excelente",
+    "usado_buen_estado": "Usado - Buen estado",
+    "usado_aceptable": "Usado - Aceptable",
+}
 
-def DashboardView(page, tarea_controller):
+
+def DashboardView(page, prenda_controller):
     usuario_actual = getattr(page, "user_data", None)
-    lista_tareas = ft.Column(scroll=ft.ScrollMode.ALWAYS, expand=True, spacing=10)
+    lista_prendas = ft.Column(scroll=ft.ScrollMode.ALWAYS, expand=True, spacing=10)
 
     def notificar(texto):
-        notif = ft.SnackBar(ft.Text(texto, color=ft.Colors.WHITE), bgcolor=ft.Colors.with_opacity(0.9, "#9D00FF"), open=True)
+        notif = ft.SnackBar(ft.Text(texto, color=ft.Colors.WHITE), bgcolor="#333333", open=True)
         page.overlay.append(notif)
         page.update()
 
-    def borrar(id_tarea):
-        exito, mensaje = tarea_controller.eliminar_tarea(id_tarea)
+    def borrar(id_prenda):
+        exito, mensaje = prenda_controller.eliminar_prenda(id_prenda)
         if exito:
-            cargar_tareas()
+            cargar_prendas()
         else:
             notificar(mensaje)
 
-    def cargar_tareas():
+    def cargar_prendas():
         if not (usuario_actual and "id_usuario" in usuario_actual):
             return
-        lista_tareas.controls.clear()
-        tareas = tarea_controller.obtener_lista(usuario_actual["id_usuario"])
-        for tarea in tareas:
-            lista_tareas.controls.append(
+        lista_prendas.controls.clear()
+        prendas = prenda_controller.obtener_lista(usuario_actual["id_usuario"])
+        for prenda in prendas:
+            lista_prendas.controls.append(
                 ft.Container(
-                    padding=14,
-                    border_radius=18,
-                    bgcolor="#1A1A1A",
-                    border=ft.border.all(1, "#9D00FF"),
-                    shadow=ft.BoxShadow(
-                        spread_radius=0,
-                        blur_radius=15,
-                        color=ft.Colors.with_opacity(0.3, "#9D00FF"),
-                        offset=ft.Offset(0, 0),
-                    ),
+                    padding=14, border_radius=12, bgcolor="#FFFFFF",
+                    border=ft.border.all(1, "#E0E0E0"),
+                    shadow=ft.BoxShadow(spread_radius=0, blur_radius=8, color=ft.Colors.with_opacity(0.08, "#000000"), offset=ft.Offset(0, 2)),
                     content=ft.Row(
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         controls=[
                             ft.Column(
-                                spacing=4,
-                                expand=True,
+                                spacing=4, expand=True,
                                 controls=[
-                                    ft.Text(tarea["titulo"], weight="bold", size=14, color="#9D00FF"),
-                                    ft.Text(tarea.get("descripcion", ""), size=12, color="#AAAAAA"),
-                                    ft.Container(
-                                        padding=ft.padding.only(top=4),
-                                        content=ft.Row(
-                                            spacing=8,
-                                            controls=[
-                                                ft.Container(
-                                                    padding=ft.padding.symmetric(horizontal=10, vertical=4),
-                                                    border_radius=12,
-                                                    bgcolor=ft.Colors.with_opacity(0.2, "#9D00FF"),
-                                                    border=ft.border.all(1, "#9D00FF"),
-                                                    content=ft.Text(
-                                                        tarea.get('prioridad','').capitalize(),
-                                                        size=10,
-                                                        color="#9D00FF",
-                                                        weight="bold"
-                                                    ),
-                                                ),
-                                                ft.Container(
-                                                    padding=ft.padding.symmetric(horizontal=10, vertical=4),
-                                                    border_radius=12,
-                                                    bgcolor=ft.Colors.with_opacity(0.2, "#9D00FF"),
-                                                    border=ft.border.all(1, "#9D00FF"),
-                                                    content=ft.Text(
-                                                        tarea.get('clasificacion',''),
-                                                        size=10,
-                                                        color="#9D00FF",
-                                                        weight="bold"
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
+                                    ft.Text(prenda["titulo"], weight="bold", size=14, color="#000000"),
+                                    ft.Text(f"${prenda['precio']} · Talla: {prenda['talla']}", size=12, color="#666666"),
+                                    ft.Row(
+                                        spacing=6,
+                                        controls=[
+                                            ft.Container(
+                                                padding=ft.padding.symmetric(horizontal=8, vertical=3),
+                                                border_radius=8, bgcolor="#F0F0F0",
+                                                border=ft.border.all(1, "#CCCCCC"),
+                                                content=ft.Text(CONDICION_LABELS.get(prenda.get("condicion", ""), prenda.get("condicion", "")), size=10, color="#333333", weight="bold"),
+                                            ),
+                                            ft.Container(
+                                                padding=ft.padding.symmetric(horizontal=8, vertical=3),
+                                                border_radius=8, bgcolor="#F0F0F0",
+                                                border=ft.border.all(1, "#CCCCCC"),
+                                                content=ft.Text(prenda.get("marca", "Sin marca"), size=10, color="#333333", weight="bold"),
+                                            ),
+                                        ],
                                     ),
                                 ],
                             ),
                             ft.IconButton(
-                                icon=ft.Icons.DELETE_ROUNDED,
-                                icon_color="#9D00FF",
-                                icon_size=22,
-                                on_click=lambda e, id=tarea["id_tarea"]: borrar(id),
+                                icon=ft.Icons.DELETE_ROUNDED, icon_color="#999999", icon_size=22,
+                                on_click=lambda e, id=prenda["id_prenda"]: borrar(id),
                             ),
                         ],
                     ),
@@ -90,146 +73,109 @@ def DashboardView(page, tarea_controller):
             )
         page.update()
 
-    cargar_tareas()
+    cargar_prendas()
 
-    input_titulo = ft.TextField(
-        label="Título",
-        expand=True,
-        border_radius=15,
-        filled=True,
-        bgcolor=ft.Colors.with_opacity(0.05, "#9D00FF"),
-        border_color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-        focused_border_color="#9D00FF",
-        label_style=ft.TextStyle(color="#9D00FF"),
-        color=ft.Colors.WHITE,
-    )
-    input_descripcion = ft.TextField(
-        label="Descripción",
-        expand=True,
-        border_radius=15,
-        filled=True,
-        bgcolor=ft.Colors.with_opacity(0.05, "#9D00FF"),
-        border_color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-        focused_border_color="#9D00FF",
-        label_style=ft.TextStyle(color="#9D00FF"),
-        color=ft.Colors.WHITE,
-    )
-    select_prioridad = ft.Dropdown(
-        label="Prioridad",
-        width=120,
-        border_radius=15,
-        bgcolor=ft.Colors.with_opacity(0.05, "#9D00FF"),
-        border_color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-        focused_border_color="#9D00FF",
-        label_style=ft.TextStyle(color="#9D00FF"),
-        color=ft.Colors.WHITE,
-        options=[ft.dropdown.Option("alta"), ft.dropdown.Option("media"), ft.dropdown.Option("baja")],
-        value="media"
-    )
-    select_categoria = ft.Dropdown(
-        label="Categoría",
-        width=120,
-        border_radius=15,
-        bgcolor=ft.Colors.with_opacity(0.05, "#9D00FF"),
-        border_color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-        focused_border_color="#9D00FF",
-        label_style=ft.TextStyle(color="#9D00FF"),
-        color=ft.Colors.WHITE,
-        options=[ft.dropdown.Option("Escuela"), ft.dropdown.Option("Trabajo"), ft.dropdown.Option("Cotidiano")],
-        value="Escuela"
-    )
-    select_estado = ft.Dropdown(
-        label="Estado",
-        width=120,
-        border_radius=15,
-        bgcolor=ft.Colors.with_opacity(0.05, "#9D00FF"),
-        border_color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-        focused_border_color="#9D00FF",
-        label_style=ft.TextStyle(color="#9D00FF"),
-        color=ft.Colors.WHITE,
-        options=[ft.dropdown.Option("Pendiente"), ft.dropdown.Option("Terminada")],
-        value="Pendiente"
-    )
-
-    def nueva_tarea(e):
-        if not (usuario_actual and input_titulo.value):
-            return
-        tarea_controller.guardar_nueva(
-            usuario_actual["id_usuario"], input_titulo.value, input_descripcion.value,
-            select_prioridad.value, select_categoria.value, select_estado.value,
+    def campo(label, expand=False, width=None, keyboard_type=None):
+        return ft.TextField(
+            label=label, expand=expand, width=width, border_radius=10, filled=True,
+            bgcolor="#F5F5F5", border_color="#CCCCCC", focused_border_color="#000000",
+            label_style=ft.TextStyle(color="#666666"), color="#000000",
+            keyboard_type=keyboard_type,
         )
-        input_titulo.value = input_descripcion.value = ""
-        select_prioridad.value = "media"
-        select_categoria.value = "Escuela"
-        select_estado.value = "Pendiente"
-        cargar_tareas()
 
-    nombre_usuario = usuario_actual['nombre'] if usuario_actual else 'Usuario'
-    
+    input_titulo = campo("Título", expand=True)
+    input_precio = campo("Precio", width=100, keyboard_type=ft.KeyboardType.NUMBER)
+    input_talla = campo("Talla", width=80)
+    input_marca = campo("Marca", expand=True)
+    input_descripcion = campo("Descripción", expand=True)
+
+    select_condicion = ft.Dropdown(
+        label="Condición", width=160, border_radius=10,
+        bgcolor="#F5F5F5", border_color="#CCCCCC", focused_border_color="#000000",
+        label_style=ft.TextStyle(color="#666666"), color="#000000",
+        options=[ft.dropdown.Option(k, text=v) for k, v in CONDICION_LABELS.items()],
+        value="nuevo",
+    )
+
+    def nueva_prenda(e):
+        if not (usuario_actual and input_titulo.value and input_precio.value and input_talla.value):
+            notificar("Título, precio y talla son obligatorios")
+            return
+        exito, mensaje = prenda_controller.guardar_nueva(
+            usuario_actual["id_usuario"], input_titulo.value, input_precio.value,
+            input_talla.value, select_condicion.value,
+            input_marca.value or "Sin marca", input_descripcion.value or ""
+        )
+        if exito:
+            input_titulo.value = input_precio.value = input_talla.value = input_marca.value = input_descripcion.value = ""
+            select_condicion.value = "nuevo"
+            cargar_prendas()
+        else:
+            notificar(mensaje)
+
+    nombre_usuario = usuario_actual["nombre"] if usuario_actual else "Usuario"
+
     barra_superior = ft.Container(
         padding=ft.padding.only(left=16, right=16, top=12, bottom=8),
-        bgcolor="#1A1A1A",
-        border=ft.border.only(bottom=ft.BorderSide(2, "#9D00FF")),
+        bgcolor="#FFFFFF",
+        border=ft.border.only(bottom=ft.BorderSide(1, "#E0E0E0")),
         content=ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
-                ft.Text(f"Hola, {nombre_usuario} ✨", size=18, weight="bold", color="#9D00FF"),
+                ft.Text(f"Hola, {nombre_usuario} 👋", size=18, weight="bold", color="#000000"),
                 ft.Row(
                     spacing=4,
                     controls=[
-                        ft.IconButton(ft.Icons.PERSON_ROUNDED, icon_color="#9D00FF", on_click=lambda _: page.go("/perfil")),
-                        ft.IconButton(ft.Icons.LOGOUT_ROUNDED, icon_color="#9D00FF", on_click=lambda _: page.go("/")),
+                        ft.IconButton(ft.Icons.PERSON_ROUNDED, icon_color="#000000", on_click=lambda _: page.go("/perfil")),
+                        ft.IconButton(ft.Icons.LOGOUT_ROUNDED, icon_color="#000000", on_click=lambda _: page.go("/")),
                     ],
                 ),
             ],
         ),
     )
-    
-    boton_agregar = ft.Container(
-        width=45,
-        height=45,
-        border_radius=22,
-        bgcolor="#9D00FF",
-        content=ft.IconButton(ft.Icons.ADD_ROUNDED, icon_color=ft.Colors.BLACK, on_click=nueva_tarea),
-    )
-    
-    formulario_tarea = ft.Container(
-        padding=16,
-        border_radius=20,
-        bgcolor="#1A1A1A",
-        border=ft.border.all(2, "#9D00FF"),
-        shadow=ft.BoxShadow(
-            spread_radius=0,
-            blur_radius=20,
-            color=ft.Colors.with_opacity(0.4, "#9D00FF"),
-            offset=ft.Offset(0, 0),
-        ),
+
+    formulario_prenda = ft.Container(
+        padding=16, border_radius=12, bgcolor="#FFFFFF",
+        border=ft.border.all(1, "#E0E0E0"),
+        shadow=ft.BoxShadow(spread_radius=0, blur_radius=8, color=ft.Colors.with_opacity(0.08, "#000000"), offset=ft.Offset(0, 2)),
         content=ft.Column(
             spacing=10,
             controls=[
-                ft.Text("✨ Nueva tarea", size=14, color="#9D00FF", weight="bold"),
-                input_titulo,
-                input_descripcion,
-                ft.Row(spacing=8, controls=[select_prioridad, select_categoria, select_estado, boton_agregar]),
+                ft.Text("Nueva prenda", size=14, color="#000000", weight="bold"),
+                ft.Row(spacing=8, controls=[input_titulo]),
+                ft.Row(spacing=8, controls=[input_precio, input_talla, select_condicion]),
+                ft.Row(spacing=8, controls=[input_marca]),
+                ft.Row(spacing=8, controls=[input_descripcion]),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.END,
+                    controls=[
+                        ft.ElevatedButton(
+                            "Agregar", height=40,
+                            style=ft.ButtonStyle(
+                                bgcolor="#000000", color="#FFFFFF",
+                                shape=ft.RoundedRectangleBorder(radius=10),
+                            ),
+                            on_click=nueva_prenda,
+                        ),
+                    ],
+                ),
             ],
         ),
     )
 
     return ft.View(
         route="/dashboard",
-        bgcolor="#0A0A0A",
+        bgcolor="#F7F7F7",
         controls=[
             barra_superior,
             ft.Container(
-                padding=16,
-                expand=True,
+                padding=16, expand=True,
                 content=ft.Column(
-                    expand=True,
-                    spacing=12,
+                    expand=True, spacing=12,
                     controls=[
-                        formulario_tarea,
-                        ft.Text("📋 Mis tareas", size=15, weight="bold", color="#9D00FF"),
-                        lista_tareas,
+                        formulario_prenda,
+                        ft.Text("Mis prendas", size=15, weight="bold", color="#000000"),
+                        lista_prendas,
                     ],
                 ),
             ),

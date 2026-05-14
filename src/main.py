@@ -1,7 +1,7 @@
 import flet as ft
 import traceback
 from controllers.UserController import AuthController
-from controllers.TareaController import TareaController
+from controllers.PrendaController import PrendaController
 from views.LoginView import LoginView
 from views.dashboardView import DashboardView
 from views.RegistroView import RegistroView
@@ -9,12 +9,12 @@ from views.UserView import PerfilView
 
 
 def start(page: ft.Page):
-    page.title = "Gestor de Tareas"
+    page.title = "Nibba Clothez"
     page.window_width = 420
-    page.window_height = 580
+    page.window_height = 700
 
     auth_ctrl = AuthController()
-    task_ctrl = TareaController()
+    prenda_ctrl = PrendaController()
 
     def route_change(e):
         try:
@@ -22,7 +22,7 @@ def start(page: ft.Page):
             if page.route == "/":
                 page.views.append(LoginView(page, auth_ctrl))
             elif page.route == "/dashboard":
-                page.views.append(DashboardView(page, task_ctrl))
+                page.views.append(DashboardView(page, prenda_ctrl))
             elif page.route == "/registro":
                 page.views.append(RegistroView(page, auth_ctrl))
             elif page.route == "/perfil":

@@ -6,33 +6,22 @@ def PerfilView(page, auth_controller):
 
     def campo_dato(etiqueta, valor, icono):
         return ft.Container(
-            padding=16,
-            border_radius=18,
-            bgcolor="#1A1A1A",
-            border=ft.border.all(1, "#9D00FF"),
-            shadow=ft.BoxShadow(
-                spread_radius=0,
-                blur_radius=15,
-                color=ft.Colors.with_opacity(0.3, "#9D00FF"),
-                offset=ft.Offset(0, 0),
-            ),
+            padding=16, border_radius=12, bgcolor="#FFFFFF",
+            border=ft.border.all(1, "#E0E0E0"),
+            shadow=ft.BoxShadow(spread_radius=0, blur_radius=8, color=ft.Colors.with_opacity(0.08, "#000000"), offset=ft.Offset(0, 2)),
             content=ft.Row(
                 spacing=12,
                 controls=[
                     ft.Container(
-                        width=40,
-                        height=40,
-                        border_radius=20,
-                        bgcolor=ft.Colors.with_opacity(0.2, "#9D00FF"),
-                        border=ft.border.all(1, "#9D00FF"),
-                        content=ft.Icon(icono, size=22, color="#9D00FF"),
+                        width=40, height=40, border_radius=20,
+                        bgcolor="#F0F0F0", border=ft.border.all(1, "#DDDDDD"),
+                        content=ft.Icon(icono, size=22, color="#000000"),
                     ),
                     ft.Column(
-                        spacing=2,
-                        expand=True,
+                        spacing=2, expand=True,
                         controls=[
                             ft.Text(etiqueta, size=11, color="#888888"),
-                            ft.Text(str(valor) if valor else "—", size=14, color="#FFFFFF", weight="w500"),
+                            ft.Text(str(valor) if valor else "—", size=14, color="#000000", weight="w500"),
                         ],
                     ),
                 ],
@@ -41,58 +30,44 @@ def PerfilView(page, auth_controller):
 
     encabezado = ft.Container(
         padding=ft.padding.only(left=16, right=16, top=12, bottom=8),
-        bgcolor="#1A1A1A",
-        border=ft.border.only(bottom=ft.BorderSide(2, "#9D00FF")),
+        bgcolor="#FFFFFF",
+        border=ft.border.only(bottom=ft.BorderSide(1, "#E0E0E0")),
         content=ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
-                ft.Text("Mi perfil 👤", size=18, weight="bold", color="#9D00FF"),
+                ft.Text("Mi perfil", size=18, weight="bold", color="#000000"),
                 ft.Row(
                     spacing=4,
                     controls=[
-                        ft.IconButton(ft.Icons.CHECKLIST_ROUNDED, icon_color="#9D00FF", on_click=lambda _: page.go("/dashboard")),
-                        ft.IconButton(ft.Icons.LOGOUT_ROUNDED, icon_color="#9D00FF", on_click=lambda _: page.go("/")),
+                        ft.IconButton(ft.Icons.CHECKROOM_ROUNDED, icon_color="#000000", on_click=lambda _: page.go("/dashboard")),
+                        ft.IconButton(ft.Icons.LOGOUT_ROUNDED, icon_color="#000000", on_click=lambda _: page.go("/")),
                     ],
                 ),
             ],
         ),
     )
-    
-    avatar_usuario = ft.Container(
-        width=80,
-        height=80,
-        border_radius=40,
-        bgcolor=ft.Colors.with_opacity(0.2, "#9D00FF"),
-        border=ft.border.all(2, "#9D00FF"),
-        content=ft.Icon(ft.Icons.PERSON_ROUNDED, size=45, color="#9D00FF"),
-    )
-    
-    nombre_usuario = ft.Text(datos.get("nombre", "Usuario"), size=22, weight="bold", color="#9D00FF")
-    email_usuario = ft.Text(datos.get("email", ""), size=13, color="#888888")
-    
+
     tarjeta_perfil = ft.Container(
-        padding=20,
-        border_radius=25,
-        bgcolor="#1A1A1A",
-        border=ft.border.all(2, "#9D00FF"),
-        shadow=ft.BoxShadow(
-            spread_radius=0,
-            blur_radius=25,
-            color=ft.Colors.with_opacity(0.5, "#9D00FF"),
-            offset=ft.Offset(0, 0),
-        ),
+        padding=20, border_radius=16, bgcolor="#FFFFFF",
+        border=ft.border.all(1, "#E0E0E0"),
+        shadow=ft.BoxShadow(spread_radius=0, blur_radius=12, color=ft.Colors.with_opacity(0.08, "#000000"), offset=ft.Offset(0, 2)),
         content=ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=8,
-            controls=[avatar_usuario, nombre_usuario, email_usuario],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
+            controls=[
+                ft.Container(
+                    width=80, height=80, border_radius=40,
+                    bgcolor="#F0F0F0", border=ft.border.all(1, "#DDDDDD"),
+                    content=ft.Icon(ft.Icons.PERSON_ROUNDED, size=45, color="#000000"),
+                ),
+                ft.Text(datos.get("nombre", "Usuario"), size=22, weight="bold", color="#000000"),
+                ft.Text(datos.get("email", ""), size=13, color="#888888"),
+            ],
         ),
     )
-    
-    espacio = ft.Divider(height=8, color=ft.Colors.TRANSPARENT)
 
     return ft.View(
         route="/perfil",
-        bgcolor="#0A0A0A",
+        bgcolor="#F7F7F7",
         controls=[
             encabezado,
             ft.Container(
@@ -101,9 +76,7 @@ def PerfilView(page, auth_controller):
                     spacing=12,
                     controls=[
                         tarjeta_perfil,
-                        espacio,
-                        campo_dato("Apellido", datos.get("apellido"), ft.Icons.BADGE_OUTLINED),
-                        campo_dato("Teléfono", datos.get("telefono"), ft.Icons.PHONE_ROUNDED),
+                        campo_dato("Correo", datos.get("email"), ft.Icons.EMAIL_ROUNDED),
                         campo_dato("Fecha de registro", datos.get("fecha_registro"), ft.Icons.CALENDAR_TODAY_ROUNDED),
                     ],
                 ),
